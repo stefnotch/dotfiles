@@ -110,7 +110,9 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     git # Flakes need this
-    jujutsu # Stefan needs this
+    jujutsu
+    # Zed for remote development
+    zed-editor
   ];
 
   # List services that you want to enable:
