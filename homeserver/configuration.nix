@@ -9,6 +9,7 @@
     # Include the results of the hardware scan.
     # Can be generated using nixos-generate-config
     ./hardware-configuration.nix
+    ../wireguard/wireguard.nix
   ];
 
   boot = {

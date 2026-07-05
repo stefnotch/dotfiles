@@ -1,5 +1,7 @@
 # NixOS Config
 
+Following tips from https://nixos-and-flakes.thiscute.world/ and other sources.
+
 ## Setup
 
 Clone to your development machine. 
