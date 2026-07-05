@@ -10,6 +10,7 @@
     # Can be generated using nixos-generate-config
     ./hardware-configuration.nix
     ../wireguard/wireguard.nix
+    ../dns/duckdns.nix
   ];
 
   boot = {
