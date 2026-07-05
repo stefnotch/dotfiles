@@ -2,27 +2,54 @@
 
 {
   # Let Wireguard through the firewall
-  networking.firewall.allowedUDPPorts = [ 51820 ];
+  # Run it on a port that is less likely to be blocked
+  networking.firewall.allowedUDPPorts = [ 3478 ];
+
+  networking.nat = {
+    enable = true;
+    enableIPv6 = true;
+    externalInterface = "enp1s0f0";
+    internalInterfaces = [ "wg0" ];
+  };
 
   networking.wg-quick.interfaces = {
     wg0 = {
       # Private, non-conflicting IP address for Wireguard
       address = [
         "10.90.90.1/24"
+        fddf:2882:0550:9aa9::1/64
       ];
       dns = [
         "1.1.1.1"
         "1.0.0.1"
       ];
-      listenPort = 51820;
+      listenPort = 3478;
       privateKeyFile = "/etc/wireguard-wg0.key";
       generatePrivateKeyFile = true;
+      # This allows the wireguard server to route your traffic
+      postUp = ''
+        ${pkgs.iptables}/bin/iptables -A FORWARD -i wg0 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.90.90.0/24 -o enp1s0f0 -j MASQUERADE
+        ${pkgs.iptables}/bin/ip6tables -A FORWARD -i wg0 -j ACCEPT
+        ${pkgs.iptables}/bin/ip6tables -t nat -A POSTROUTING -s fddf:2882:0550:9aa9::1/64 -o enp1s0f0 -j MASQUERADE
+      '';
+
+      # Undo the above
+      preDown = ''
+        ${pkgs.iptables}/bin/iptables -D FORWARD -i wg0 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.90.90.0/24 -o enp1s0f0 -j MASQUERADE
+        ${pkgs.iptables}/bin/ip6tables -D FORWARD -i wg0 -j ACCEPT
+        ${pkgs.iptables}/bin/ip6tables -t nat -D POSTROUTING -s fddf:2882:0550:9aa9::1/64 -o enp1s0f0 -j MASQUERADE
+      '';
+
       peers = [
-        { # Stefan gets an IP in my network
+        { # Stefan
           publicKey = "ZD52qjNPWLKeery33vp3LcWHfZEN+9PSYb3T9gtZ1Qw=";
           allowedIPs = [
-            "10.90.90.10/32"
+            "10.90.90.10/24"
+            fddf:2882:0550:9aa9::10/64
           ];
+          persistentKeepalive = 25;
         }
       ];
     };
