@@ -1,0 +1,49 @@
+body {
+    font-family: 'Sketchy', cursive;
+    margin: 20px;
+    font-size: x-large;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.checkbox-summary {
+    font-weight: bold;
+}
+
+.checkbox-summary:hover {
+    text-decoration: underline wavy;
+    text-decoration-color: #3c3c3c;
+    text-decoration-thickness: 2px;
+}
+
+.checkbox-summary input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+#hero {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#links {
+    width: 400px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+#links a:hover {
+    text-decoration: underline wavy;
+}
+
+#header {
+    max-width: 1200px;
+}
