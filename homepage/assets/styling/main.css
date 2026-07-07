@@ -34,16 +34,10 @@ main {
 }
 
 #links {
-    width: 400px;
-    text-align: left;
     display: flex;
     flex-direction: column;
 }
 
 #links a:hover {
     text-decoration: underline wavy;
-}
-
-#header {
-    max-width: 1200px;
 }

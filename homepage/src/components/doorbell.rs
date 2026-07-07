@@ -30,6 +30,7 @@ pub fn Doorbell() -> Element {
             r#type: "password",
             placeholder: "Password",
             minlength: "8",
+            size: "20",
             value: "{doorbell_password.get()}",
             oninput: move |event| {
                 doorbell_password.set(event.value());
@@ -39,7 +40,7 @@ pub fn Doorbell() -> Element {
         if doorbell_password.get().len() >= 8 {
             img {
                 alt: "Doorbell Video Feed",
-                style: "max-width: 640px; height: auto;",
+                style: "max-width: min(640px, 100%); height: auto;",
                 src: "{image_src.read()}",
             }
             br {}
