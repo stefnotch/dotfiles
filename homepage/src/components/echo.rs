@@ -11,14 +11,13 @@ pub fn Echo() -> Element {
     let mut response = use_signal(|| String::new());
 
     rsx! {
-        fieldset {
-            id: "echo",
+        fieldset { id: "echo",
             legend { "ServerFn Echo" }
             input {
                 placeholder: "Type here to echo...",
                 // `oninput` is an event handler that will run when the input changes. It can return either nothing or a future
                 // that will be run when the event runs.
-                oninput:  move |event| async move {
+                oninput: move |event| async move {
                     // When we call the echo_server function from the client, it will fire a request to the server and return
                     // the response. It handles serialization and deserialization of the request and response for us.
                     let data = echo_server(event.value()).await.unwrap();

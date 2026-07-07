@@ -1,0 +1,24 @@
+{
+    "name": "Home Server",
+    "icons": {
+        "32": "icon.svg",
+        "48": "icon.svg",
+        "64": "icon.svg",
+        "128": "icon.svg"
+    },
+    "start_url": "/",
+    "id": "/",
+    "display": "standalone",
+    "display_override": [
+        "window-control-overlay",
+        "standalone"
+    ],
+    "scope": "/",
+    "theme_color": "#3c3c3c",
+    "background_color": "#fdf7f1",
+    "short_name": "Home Server",
+    "description": "The homepage for our homeserver; it is very convenient.",
+    "dir": "ltr",
+    "lang": "en",
+    "orientation": "portrait"
+}

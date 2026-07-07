@@ -27,20 +27,20 @@ pub fn Doorbell() -> Element {
         "Connect to the doorbell!"
         br {}
         input {
-            type: "password",
+            r#type: "password",
             placeholder: "Password",
             minlength: "8",
             value: "{doorbell_password.get()}",
             oninput: move |event| {
                 doorbell_password.set(event.value());
-            }
+            },
         }
         br {}
         if doorbell_password.get().len() >= 8 {
             img {
                 alt: "Doorbell Video Feed",
                 style: "max-width: 640px; height: auto;",
-                src: "{image_src.read()}"
+                src: "{image_src.read()}",
             }
             br {}
             a {

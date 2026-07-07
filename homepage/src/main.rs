@@ -59,7 +59,9 @@ fn App() -> Element {
         // we are using the `document::Link` component to add a link to our favicon and main CSS file into the head of our app.
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_CSS }
-        document::Style { "@font-face {{ font-family: 'Sketchy'; src: url('{SKETCHY_FONT}') format('truetype'); font-display: swap; }}" }
+        document::Style {
+            "@font-face {{ font-family: 'Sketchy'; src: url('{SKETCHY_FONT}') format('truetype'); font-display: swap; }}"
+        }
 
         // The router component renders the route enum we defined above. It will handle synchronization of the URL and render
         // the layouts and components for the active route.

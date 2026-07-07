@@ -3,7 +3,7 @@
 use dioxus::{
     core::Task,
     dioxus_core::SpawnIfAsync,
-    prelude::{Callback, spawn, use_hook},
+    prelude::{Callback, use_hook},
     signals::{Signal, WritableExt as _},
 };
 use std::time::Duration;
@@ -48,7 +48,7 @@ pub fn use_interval<MaybeAsync: SpawnIfAsync<Marker>, Marker>(
     let inner = use_hook(|| {
         let callback = Callback::new(callback);
         #[cfg(target_family = "wasm")]
-        let task = Some(spawn(async move {
+        let task = Some(dioxus::core::spawn(async move {
             loop {
                 gloo_timers::future::sleep(period).await;
                 callback.call(());
