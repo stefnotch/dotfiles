@@ -1619,6 +1619,7 @@ dependencies = [
  "dioxus",
  "gloo-timers 0.4.0",
  "serde",
+ "serde_json",
  "web-sys",
 ]
 

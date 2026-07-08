@@ -6,10 +6,12 @@ use views::{Blog, Home, Navbar};
 
 /// Define a components module that contains all shared components for our app.
 mod components;
-pub mod storage;
+mod server;
+mod storage;
 mod timers;
 /// Define a views module that contains the UI for all Layouts and Routes for our app.
 mod views;
+mod wireguard;
 
 /// The Route enum is used to define the structure of internal routes in our app. All route enums need to derive
 /// the [`Routable`] trait, which provides the necessary methods for the router to work.
