@@ -58,8 +58,6 @@
   };
 
   # Ports for Caddy reverse proxy
-  # I wish I had an IPv6 address.
-  # Then I could replace stefnotch-home.duckdns.org with stefnotch.duckdns.org
   networking.firewall.allowedTCPPorts = [ 80 443 ];
   services.caddy = {
     enable = true;
