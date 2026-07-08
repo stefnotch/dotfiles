@@ -57,6 +57,26 @@
     };
   };
 
+  # Ports for Caddy reverse proxy
+  # I wish I had an IPv6 address.
+  # Then I could replace stefnotch-home.duckdns.org with stefnotch.duckdns.org
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  services.caddy = {
+    enable = true;
+    # Will be upgraded to a reverse proxy once it is working
+    virtualHosts."stefnotch-home.duckdns.org".extraConfig = ''
+      tls {
+        dns duckdns {file./etc/duckdns.key}
+      }
+
+      respond "Hello, world!"
+    '';
+    package = pkgs.caddy.withPlugins {
+        plugins = [ "github.com/caddy-dns/duckdns@v0.5.0" ];
+        hash = "sha256-BI72FyEpCKTyQ9lRlVcRsPLSyXlfwdOae57KhVTH/M8=";
+    };
+  };
+
   # Set your time zone.
   time.timeZone = "Europe/Vienna";
 
