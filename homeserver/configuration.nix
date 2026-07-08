@@ -91,6 +91,12 @@
     ];
   };
 
+  security.sudo.extraConfig = ''
+    Defaults lecture = never # less noisy sudo
+    Defaults pwfeedback # show dots when typing password
+    Defaults timestamp_timeout=30 # only ask for password every 30 minutes
+    '';
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   # Freaking insecure drivers
