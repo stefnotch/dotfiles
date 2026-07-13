@@ -24,3 +24,13 @@ jj git remote add homeserver ssh://stefnotch@192.168.1.10/~/dotfiles
 jj bookmark track main --remote homeserver
 jj git push --remote homeserver
 ```
+
+## Trying stuff out
+
+```bash
+nix repl
+
+nix build -vL .#
+```
+
+Breakpoint hook lets you go into the build environment

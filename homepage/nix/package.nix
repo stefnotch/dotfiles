@@ -5,8 +5,8 @@
   makeWrapper,
 
   rustToolchain,
-  wasmBindgen,
   dioxus-cli,
+  wasmBindgen,
 }:
 let
   name = "homepage";

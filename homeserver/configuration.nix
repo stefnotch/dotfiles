@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -39,11 +39,7 @@
   };
 
   networking = {
-    networkmanager.enable = true;
     hostName = "nixos";
-
-    # Use the device mac instead of it changing all the time
-    networkmanager.ethernet.macAddress = "permanent";
 
     nameservers = [
         "1.1.1.1"
@@ -53,12 +49,16 @@
     ];
     # Interface names can be found via `ip link show`
     interfaces.enp1s0f0 = {
-
+      ipv6.addresses = [{
+        # Local address, so no default gateway
+        address = "2a00:cf8:e417::10";
+        prefixLength = 64;
+      }];
     };
   };
 
   # Ports for Caddy reverse proxy
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedTCPPorts = [ 80 443 8080 ];
   services.caddy = {
     enable = true;
     # Will be upgraded to a reverse proxy once it is working
@@ -67,7 +67,10 @@
         dns duckdns {file./etc/duckdns.key}
       }
 
-      respond "Hello, world!"
+      reverse_proxy http://localhost:8080 {
+        header_down X-Real-IP {http.request.remote}
+        header_down X-Forwarded-For {http.request.remote}
+      }
     '';
     package = pkgs.caddy.withPlugins {
         plugins = [ "github.com/caddy-dns/duckdns@v0.5.0" ];
@@ -108,6 +111,8 @@
       ../ssh/authorized_keys
     ];
   };
+
+  nix.settings.trusted-users = [ "@wheel" ];
 
   security.sudo.extraConfig = ''
     Defaults lecture = never # less noisy sudo
@@ -160,6 +165,27 @@
       AllowUsers = [ "stefnotch" ];
     };
   };
+
+  systemd.services.homepage = {
+    description = "Best Homepage";
+    wantedBy = ["multi-user.target"];
+    after = ["network.target"];
+    serviceConfig = {
+      ExecStart = "${inputs.homepage.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/homepage";
+      Restart = "always";
+      Type = "simple";
+      DynamicUser = "yes";
+      # Grant network modification even for underprivileged users
+      AmbientCapabilities = [
+        "CAP_NET_ADMIN"
+      ];
+    };
+    environment = {
+      IP = "::";
+      PORT = "8080";
+    };
+  };
+
 
   # Auto updates let's gooo
   system.autoUpgrade.enable = true;

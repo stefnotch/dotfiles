@@ -4,4 +4,7 @@ Copy your [DuckDNS token](https://www.duckdns.org/install.jsp) to `/etc/duckdns.
 
 Then this thing should work.
 
-Note that `stefnotch-home.duckdns.org` must be hardcoded to the homeserver's IP address.
+## Extra domains
+
+Hardcode these domains to have the homeserver's IP address.
+- `stefnotch-home.duckdns.org`
