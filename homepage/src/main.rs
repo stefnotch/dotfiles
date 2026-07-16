@@ -44,9 +44,22 @@ const SKETCHY_FONT: Asset = asset!("/assets/font/Indie_Flower/IndieFlower-Regula
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
 
 fn main() {
-    // The `launch` function is the main entry point for a dioxus app. It takes a component and renders it with the platform feature
-    // you have enabled
+    #[cfg(not(feature = "server"))]
     dioxus::launch(App);
+
+    #[cfg(feature = "server")]
+    dioxus::serve(|| async move {
+        use dioxus::server::axum::routing::{get, post};
+        Ok(
+            dioxus::server::router(App).route(
+                "/api/doorbell/picture",
+                get(crate::server::doorbell::get_doorbell_picture),
+            ), // .layer(
+               //     AuthLayer::new(Some(db.clone()))
+               //         .with_config(AuthConfig::<i64>::default().with_anonymous_user_id(Some(1))),
+               // )
+        )
+    });
 }
 
 /// App is the main component of our app. Components are the building blocks of dioxus apps. Each component is a function

@@ -11,13 +11,12 @@ dioxus = { version = "0.8.0-alpha.0", features = ["fullstack", "router"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-[target.'cfg(target_family = "wasm")'.dependencies]
-gloo-timers = { version = "0.4", features = ["futures"] }
-web-sys = { version = "0.3", features = ["Storage", "Window"] }
+gloo-timers = { version = "0.4", features = ["futures"], optional = true }
+web-sys = { version = "0.3", features = ["Storage", "Window"], optional = true }
 
 [features]
 default = ["web"]
 # The feature that are only required for the server = ["dioxus/server"] build target should be optional and only enabled in the server = ["dioxus/server"] feature
 server = ["dioxus/server"]
 # The feature that are only required for the web = ["dioxus/web"] build target should be optional and only enabled in the web = ["dioxus/web"] feature
-web = ["dioxus/web"]
+web = ["dioxus/web", "gloo-timers", "web-sys"]

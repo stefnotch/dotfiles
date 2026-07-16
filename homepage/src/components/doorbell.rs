@@ -1,3 +1,4 @@
+use crate::server::{DOORBELL_IP, DOORBELL_USERNAME};
 use std::time::Duration;
 
 use dioxus::prelude::*;
@@ -6,8 +7,6 @@ use crate::{storage::use_persistent, timers::use_interval};
 
 #[component]
 pub fn Doorbell() -> Element {
-    let doorbell_ip = "192.168.1.16";
-    let doorbell_username = "admin";
     let mut doorbell_password = use_persistent("doorbell-password", || String::new());
 
     let mut image_src = use_signal(|| String::new());
@@ -16,7 +15,7 @@ pub fn Doorbell() -> Element {
         let id = counter();
         counter.set(id + 1);
         image_src.set(format!(
-            "http://{doorbell_ip}/cgi-bin/images_cgi?channel=0&user={doorbell_username}&pwd={}&{}",
+            "/api/doorbell/picture?password={}&id={}",
             doorbell_password.get(),
             id,
         ));
@@ -45,7 +44,7 @@ pub fn Doorbell() -> Element {
             }
             br {}
             a {
-                href: "http://{doorbell_username}:{doorbell_password.get()}@{doorbell_ip}/login.asp",
+                href: "http://{DOORBELL_USERNAME}:{doorbell_password.get()}@{DOORBELL_IP}/login.asp",
                 target: "_blank",
                 "Settings ⚙️"
             }
