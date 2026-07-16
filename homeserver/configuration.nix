@@ -68,7 +68,6 @@
       }
 
       reverse_proxy http://localhost:8080 {
-        header_down X-Real-IP {http.request.remote}
         header_down X-Forwarded-For {http.request.remote}
       }
     '';

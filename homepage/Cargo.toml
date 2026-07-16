@@ -12,6 +12,12 @@ percent-encoding = "2.3.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
+axum-client-ip = {
+  version = "1.3.1",
+  default-features = false,
+  features = ["connect-info"],
+  optional = true
+}
 gloo-timers = { version = "0.4", features = ["futures"], optional = true }
 qrcode = {
   version = "0.14.1",
@@ -21,9 +27,9 @@ qrcode = {
 web-sys = { version = "0.3", features = ["Storage", "Window"], optional = true }
 
 [features]
-default = ["web"]
+default = ["server", "web"]
 # The feature that are only required for the server = ["dioxus/server"] build target should be optional and only enabled in the server = ["dioxus/server"] feature
-server = ["dioxus/server"]
+server = ["axum-client-ip", "dioxus/server"]
 # The feature that are only required for the web = ["dioxus/web"] build target should be optional and only enabled in the web = ["dioxus/web"] feature
 web = ["dioxus/web", "gloo-timers", "web-sys"]
 

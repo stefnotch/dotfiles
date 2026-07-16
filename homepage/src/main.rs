@@ -1,5 +1,3 @@
-// The dioxus prelude contains a ton of common items used in dioxus apps. It's a good idea to import wherever you
-// need dioxus
 use dioxus::prelude::*;
 
 use views::{Blog, Home, Navbar};
@@ -44,21 +42,25 @@ const SKETCHY_FONT: Asset = asset!("/assets/font/Indie_Flower/IndieFlower-Regula
 const MAIN_CSS: Asset = asset!("/assets/styling/main.css");
 
 fn main() {
-    #[cfg(not(feature = "server"))]
-    dioxus::launch(App);
+    cfg_select! {
+        feature = "server" => server_main(),
+        _ => dioxus::launch(App),
+    }
+}
 
-    #[cfg(feature = "server")]
+#[cfg(feature = "server")]
+fn server_main() {
+    use dioxus::server::axum::routing::{get, post};
+
     dioxus::serve(|| async move {
-        use dioxus::server::axum::routing::{get, post};
-        Ok(
-            dioxus::server::router(App).route(
+        use dioxus::server::axum::ServiceExt;
+
+        Ok(dioxus::server::router(App)
+            .route(
                 "/api/doorbell/picture",
                 get(crate::doorbell::server::get_doorbell_picture),
-            ), // .layer(
-               //     AuthLayer::new(Some(db.clone()))
-               //         .with_config(AuthConfig::<i64>::default().with_anonymous_user_id(Some(1))),
-               // )
-        )
+            )
+            .layer(axum_client_ip::ClientIpSource::RightmostXForwardedFor.into_extension()))
     });
 }
 

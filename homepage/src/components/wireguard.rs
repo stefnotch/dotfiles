@@ -8,12 +8,26 @@ use crate::{
 #[component]
 pub fn Wireguard() -> Element {
     // use_signal is a hook. Hooks in dioxus must be run in a consistent order every time the component is rendered.
-    // That means they can't be run inside other hooks, async blocks, if statements, or loops.
+    // That means they can't be run inside othetr hooks, async blocks, if statements, or loops.
     //
     // use_signal is a hook that creates a state for the component. It takes a closure that returns the initial value of the state.
     // The state is automatically tracked and will rerun any other hooks or components that read it whenever it changes.
 
+    let my_ip = use_resource(move || async move { get_me().await });
+
     rsx! {
+        "You are"
+        if let Some(response) = &*my_ip.read() {
+            match response {
+                Ok(ip) => rsx! {
+                    p { "Your IP: {ip}" }
+                },
+                Err(err) => rsx! { "Failed to fetch IP: {err}" },
+            }
+        } else {
+            "Loading..."
+        }
+
         "Add a computer to Wireguard!"
         br {}
         AddDevice {}
@@ -32,8 +46,7 @@ enum RequestState<T, E> {
 pub fn AddDevice() -> Element {
     let mut device_name = use_signal(|| String::new());
 
-    let mut device =
-        use_signal::<RequestState<WireguardDeviceWithPrivateKey, String>>(|| RequestState::Idle);
+    let mut device = use_signal::<RequestState<String, String>>(|| RequestState::Idle);
 
     let display_device = match device() {
         RequestState::Idle => rsx! {},
@@ -43,8 +56,7 @@ pub fn AddDevice() -> Element {
         RequestState::Error(err) => rsx! {
             p { "{err}" }
         },
-        RequestState::Success(new_device) => {
-            let config = to_wireguard_config(&new_device);
+        RequestState::Success(config) => {
             rsx! {
                 QrCode { data: config.as_bytes().to_vec() }
                 br {}
@@ -104,90 +116,10 @@ fn DownloadTextFile(text: String, filename: String, children: Element) -> Elemen
 }
 
 #[post("/api/vpn/add_device")]
-async fn add_vpn_device(name: String) -> Result<WireguardDeviceWithPrivateKey> {
-    use std::io::Write as _;
-    // call `wg genkey` to generate a new private key
-    let private_key = std::process::Command::new("wg")
-        .arg("genkey")
-        .output()?
-        .stdout;
-
-    let mut public_key_command = std::process::Command::new("wg")
-        .arg("pubkey")
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .spawn()?;
-
-    let mut stdin = public_key_command
-        .stdin
-        .take()
-        .expect("Failed to open stdin");
-
-    let output = std::thread::scope(|s| {
-        s.spawn(|| {
-            stdin
-                .write_all(&private_key)
-                .expect("Failed to write to stdin");
-            // Close stdin to signal that we're done writing
-            drop(stdin);
-        });
-        public_key_command.wait_with_output()
-    })?;
-
-    let private_key = String::from_utf8(private_key)
-        .expect("failed to convert to string")
-        .trim()
-        .to_owned();
-    let public_key = String::from_utf8(output.stdout)?.trim().to_owned();
-
-    let mut all_devices = WireguardDevice::load_all()?;
-    // 1 is used by the server itself
-    let id = (2..255u32)
-        .find(|id| !all_devices.iter().any(|device| device.id == *id))
-        .ok_or_else(|| {
-            std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "No available ID for new Wireguard device",
-            )
-        })?;
-
-    let device = WireguardDevice {
-        name,
-        group: "vpn".to_string(),
-        public_key,
-        id,
-    };
-
-    all_devices.push(device.clone());
-    WireguardDevice::save_all(&all_devices)?;
-
-    Ok(WireguardDeviceWithPrivateKey {
-        device,
-        private_key,
-    })
-}
-
-fn to_wireguard_config(
-    WireguardDeviceWithPrivateKey {
-        device,
-        private_key,
-    }: &WireguardDeviceWithPrivateKey,
-) -> String {
-    const SERVER_PUBLIC_KEY: &str = include_str!("../../../wireguard/wg0.pub");
-
-    let id = device.id;
-    format!(
-        "[Interface]
-Address = 10.90.90.{id}/24, fd06:f100:1796::{id}/64
-DNS = 1.1.1.1
-PrivateKey = {private_key}
-
-[Peer]
-AllowedIPs = 0.0.0.0/0, ::/0
-Endpoint = stefnotch.duckdns.org:3478
-PublicKey = {SERVER_PUBLIC_KEY}
-",
-    )
+async fn add_vpn_device(name: String) -> Result<String> {
+    use crate::wireguard::server::to_wireguard_config;
+    let device = WireguardDevice::add_device(name)?;
+    Ok(to_wireguard_config(&device))
 }
 
 #[get("/api/vpn/devices")]
@@ -197,4 +129,36 @@ async fn get_vpn_devices() -> dioxus::Result<Vec<WireguardDevice>> {
         // .filter(|device| device.group == "vpn")
         .collect();
     Ok(devices)
+}
+
+#[get("/api/me", ip: SimpleClientIp)]
+async fn get_me() -> dioxus::Result<String> {
+    let me =
+        ip.0.map(|ip| ip.to_string())
+            .unwrap_or_else(|| "unknown".to_string());
+    Ok(me)
+}
+
+// Recursive expansion of define_extractor! macro
+// ===============================================
+
+#[derive(Debug, Clone, Copy)]
+pub struct SimpleClientIp(pub Option<std::net::IpAddr>);
+
+#[cfg(feature = "server")]
+impl<S> dioxus_server::axum::extract::FromRequestParts<S> for SimpleClientIp
+where
+    S: Sync,
+{
+    type Rejection = axum_client_ip::Rejection;
+    async fn from_request_parts(
+        parts: &mut dioxus_server::axum::http::request::Parts,
+        _state: &S,
+    ) -> Result<Self, Self::Rejection> {
+        Ok(
+            axum_client_ip::RightmostXForwardedFor::from_request_parts(parts, _state)
+                .await
+                .map_or_else(|_| SimpleClientIp(None), |ip| SimpleClientIp(Some(ip.0))),
+        )
+    }
 }
