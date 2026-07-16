@@ -15,3 +15,6 @@ pub use echo::Echo;
 
 mod qrcode;
 pub use qrcode::QrCode;
+
+mod cat;
+pub use cat::Cat;

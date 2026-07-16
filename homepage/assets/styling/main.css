@@ -46,3 +46,30 @@ button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
+.animated-cat:focus {
+    animation: cat-animation 2s infinite;
+}
+
+@keyframes cat-animation {
+    0% {
+        transform: translateX(0) rotateY(0deg);
+    }
+
+    45% {
+        transform: translateX(-300px) rotateY(0deg);
+    }
+
+    55% {
+        transform: translateX(-300px) rotateY(180deg);
+    }
+
+    90% {
+        transform: translateX(0) rotateY(180deg);
+    }
+
+    100% {
+        transform: translateX(0) rotateY(0deg);
+    }
+}

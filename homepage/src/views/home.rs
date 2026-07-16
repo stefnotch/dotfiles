@@ -1,8 +1,7 @@
-use crate::components::{Doorbell, Echo, ExpandBox, Wireguard};
+use crate::components::{Cat, Doorbell, Echo, ExpandBox, Wireguard};
 use dioxus::prelude::*;
 
 const HOME_ICON: Asset = asset!("/assets/house.svg");
-const CAT_PICTURE: Asset = asset!("/assets/cat.svg");
 
 /// The Home page component that will be rendered when the current route is `[Route::Home]`
 /// TODO: The house should change if we're not connected with wireguard (aka the backend is unreachable)
@@ -52,20 +51,5 @@ pub fn HomeNetwork() -> Element {
 pub fn Vpn() -> Element {
     rsx! {
         div { Wireguard {} }
-    }
-}
-
-#[component]
-pub fn Cat() -> Element {
-    rsx! {
-        div { style: "display: flex; justify-content: end; margin-top: 2rem;",
-            img {
-                src: CAT_PICTURE,
-                alt: "Cat Icon",
-                style: "border: 0;",
-                width: 128,
-
-            }
-        }
     }
 }
