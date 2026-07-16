@@ -1,4 +1,4 @@
-use crate::components::{Doorbell, Echo, ExpandBox};
+use crate::components::{Doorbell, Echo, ExpandBox, Wireguard};
 use dioxus::prelude::*;
 
 const HOME_ICON: Asset = asset!("/assets/house.svg");
@@ -51,24 +51,21 @@ pub fn HomeNetwork() -> Element {
 #[component]
 pub fn Vpn() -> Element {
     rsx! {
-        div {
-            "Download WireGuard!"
-        }
+        div { Wireguard {} }
     }
 }
 
 #[component]
 pub fn Cat() -> Element {
     rsx! {
-        div {
-            style: "display: flex; justify-content: end; margin-top: 2rem;",
-        img {
-            src: CAT_PICTURE,
-            alt: "Cat Icon",
-            style: "border: 0;",
-            width: 128,
+        div { style: "display: flex; justify-content: end; margin-top: 2rem;",
+            img {
+                src: CAT_PICTURE,
+                alt: "Cat Icon",
+                style: "border: 0;",
+                width: 128,
 
+            }
         }
-    }
     }
 }

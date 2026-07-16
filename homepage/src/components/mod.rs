@@ -4,8 +4,14 @@
 mod doorbell;
 pub use doorbell::Doorbell;
 
+mod wireguard;
+pub use wireguard::Wireguard;
+
 mod expand_box;
 pub use expand_box::ExpandBox;
 
 mod echo;
 pub use echo::Echo;
+
+mod qrcode;
+pub use qrcode::QrCode;

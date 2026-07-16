@@ -1,5 +1,3 @@
-use dioxus::prelude::*;
-
 // #[cfg(feature = "server")]
 pub mod server;
 
@@ -12,11 +10,8 @@ pub struct WireguardDevice {
     pub id: u32,
 }
 
-#[get("/api/vpn/devices")]
-async fn get_vpn_devices() -> dioxus::Result<Vec<WireguardDevice>> {
-    let devices = WireguardDevice::load_all()
-        .into_iter()
-        // .filter(|device| device.group == "vpn")
-        .collect();
-    Ok(devices)
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+pub struct WireguardDeviceWithPrivateKey {
+    pub device: WireguardDevice,
+    pub private_key: String,
 }
