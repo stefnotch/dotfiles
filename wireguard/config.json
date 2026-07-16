@@ -1,0 +1,20 @@
+{
+  "prefix": {
+    "IPv4": "10.90.90",
+    "IPv6": "fd06:f100:1796"
+  },
+  "peers": [
+    {
+      "name": "Stefan Phone",
+      "group": "admin",
+      "publicKey": "ZD52qjNPWLKeery33vp3LcWHfZEN+9PSYb3T9gtZ1Qw=",
+      "id": 10
+    },
+    {
+      "name": "help",
+      "group": "vpn",
+      "publicKey": "+Xw29KSj8Cd8ESob6rkxp1Y5nMqD86Mo+otxD3JHZy4=",
+      "id": 2
+    }
+  ]
+}

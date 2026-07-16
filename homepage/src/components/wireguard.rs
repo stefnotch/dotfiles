@@ -1,9 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{
-    components::QrCode,
-    wireguard::{WireguardDevice, WireguardDeviceWithPrivateKey},
-};
+use crate::{components::QrCode, wireguard::WireguardDevice};
 
 #[component]
 pub fn Wireguard() -> Element {
@@ -13,7 +10,7 @@ pub fn Wireguard() -> Element {
     // use_signal is a hook that creates a state for the component. It takes a closure that returns the initial value of the state.
     // The state is automatically tracked and will rerun any other hooks or components that read it whenever it changes.
 
-    let my_ip = use_resource(move || async move { get_me().await });
+    let my_ip = use_resource(move || async move { get_my_ip().await });
 
     rsx! {
         "You are"
@@ -115,28 +112,44 @@ fn DownloadTextFile(text: String, filename: String, children: Element) -> Elemen
     }
 }
 
-#[post("/api/vpn/add_device")]
+#[post("/api/vpn/add_device", ip: SimpleClientIp)]
 async fn add_vpn_device(name: String) -> Result<String> {
-    use crate::wireguard::server::to_wireguard_config;
-    let device = WireguardDevice::add_device(name)?;
+    use crate::wireguard::{WireguardConfig, server::to_wireguard_config};
+    let mut config = WireguardConfig::load()?;
+
+    let group = ip.0.and_then(|ip| {
+        Some(
+            config
+                .peers
+                .iter()
+                .find(|device| device.name == name)?
+                .group
+                .clone(),
+        )
+    });
+
+    let device = config.add_device(name, group)?;
     Ok(to_wireguard_config(&device))
 }
 
 #[get("/api/vpn/devices")]
 async fn get_vpn_devices() -> dioxus::Result<Vec<WireguardDevice>> {
-    let devices = WireguardDevice::load_all()?
+    use crate::wireguard::WireguardConfig;
+    let config = WireguardConfig::load()?;
+    let devices = config
+        .peers
         .into_iter()
         // .filter(|device| device.group == "vpn")
         .collect();
     Ok(devices)
 }
 
-#[get("/api/me", ip: SimpleClientIp)]
-async fn get_me() -> dioxus::Result<String> {
-    let me =
+#[get("/api/my_ip", ip: SimpleClientIp)]
+async fn get_my_ip() -> dioxus::Result<String> {
+    let my_ip =
         ip.0.map(|ip| ip.to_string())
             .unwrap_or_else(|| "unknown".to_string());
-    Ok(me)
+    Ok(my_ip)
 }
 
 // Recursive expansion of define_extractor! macro

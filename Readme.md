@@ -13,7 +13,7 @@ Do the edits.
 
 And then Nixy Switchy to it
 ```bash
-sudo nixos-rebuild switch --flake ~/dotfiles/homeserver#homeserver
+sudo nixos-rebuild switch -vL --flake ~/dotfiles/homeserver#homeserver
 ```
 
 ## Push directly from my laptop to the homeserver

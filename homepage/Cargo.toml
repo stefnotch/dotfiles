@@ -27,12 +27,11 @@ qrcode = {
 web-sys = { version = "0.3", features = ["Storage", "Window"], optional = true }
 
 [features]
-default = ["server", "web"]
-# The feature that are only required for the server = ["dioxus/server"] build target should be optional and only enabled in the server = ["dioxus/server"] feature
+default = ["web"]
 server = ["axum-client-ip", "dioxus/server"]
-# The feature that are only required for the web = ["dioxus/web"] build target should be optional and only enabled in the web = ["dioxus/web"] feature
 web = ["dioxus/web", "gloo-timers", "web-sys"]
 
 [profile.release]
 opt-level = 2
 debug = "line-tables-only"
+incremental = false

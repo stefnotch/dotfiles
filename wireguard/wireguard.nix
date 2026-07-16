@@ -12,11 +12,17 @@
     internalInterfaces = [ "wg0" ];
   };
 
-  networking.wg-quick.interfaces.wg0 = {
+  networking.wg-quick.interfaces.wg0 = 
+  let
+    connection = builtins.fromJSON (builtins.readFile ./config.json);
+    prefix = connection.prefix;
+    peers = connection.peers;
+  in
+  {
     # Private, non-conflicting IP address for Wireguard
     address = [
-      "10.90.90.1/24"
-      fd06:f100:1796::1/64
+      "${prefix.IPv4}.1/24"
+      "${prefix.IPv6}::1/64"
     ];
     dns = [
       "1.1.1.1"
@@ -28,27 +34,23 @@
     # This allows the wireguard server to route your traffic
     postUp = ''
       ${pkgs.iptables}/bin/iptables -A FORWARD -i wg0 -j ACCEPT
-      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.90.90.0/24 -o enp1s0f0 -j MASQUERADE
+      ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${prefix.IPv4}.0/24 -o enp1s0f0 -j MASQUERADE
     '';
 
     # Undo the above
     preDown = ''
       ${pkgs.iptables}/bin/iptables -D FORWARD -i wg0 -j ACCEPT
-      ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.90.90.0/24 -o enp1s0f0 -j MASQUERADE
+      ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${prefix.IPv4}.0/24 -o enp1s0f0 -j MASQUERADE
     '';
 
-    peers =
-      let
-        peerData = builtins.fromJSON (builtins.readFile ./peers.json);
-      in
-        map (peer: {
+    peers = map (peer: {
           publicKey = peer.publicKey;
           # Only allow the exact IP, hence /32
           allowedIPs = [
-            "10.90.90.${toString peer.id}/32"
-            "fd06:f100:1796::${toString peer.id}/128"
+            "${prefix.IPv4}.${toString peer.id}/32"
+            "${prefix.IPv6}::${toString peer.id}/128"
           ];
           persistentKeepalive = 25;
-        }) peerData;
+        }) peers;
   };
 }

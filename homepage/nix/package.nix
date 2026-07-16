@@ -33,6 +33,7 @@ in
       dx bundle --debug-symbols=false --release --web --package ${name}
     '';
 
+    doCheck = false;
     checkPhase = "";
 
     installPhase = "
