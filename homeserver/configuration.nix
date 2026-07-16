@@ -170,6 +170,7 @@
     wantedBy = ["multi-user.target"];
     after = ["network.target"];
     serviceConfig = {
+      ProtectSystem = "strict";
       ExecStart = "${inputs.homepage.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/homepage";
       Restart = "always";
       Type = "simple";
@@ -178,10 +179,12 @@
       AmbientCapabilities = [
         "CAP_NET_ADMIN"
       ];
+      ReadWritePaths = [ "/home/stefnotch/dotfiles/wireguard/config.json" ];
     };
     environment = {
       IP = "::";
       PORT = "8080";
+      WIREGUARD_PATH = "/home/stefnotch/dotfiles/wireguard";
     };
   };
 

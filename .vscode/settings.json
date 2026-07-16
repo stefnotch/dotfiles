@@ -12,5 +12,4 @@
     "[html]": {
         "editor.defaultFormatter": "vscode.html-language-features",
     },
-    "rust-analyzer.cargo.target": "wasm32-unknown-unknown"
 }

@@ -1,13 +1,19 @@
+use dioxus::logger::tracing;
+
 use crate::wireguard::WireguardConfig;
 use crate::wireguard::{WireguardDevice, WireguardDeviceWithPrivateKey};
 use std::sync::LazyLock;
-const WIREGUARD_KEY_PATH: &str = "../wireguard/wg0.pub";
-const WIREGUARD_DEVICES_PATH: &str = "../wireguard/config.json";
 
-// a lazy static to load the wireguard public key from the file system.
-// but use the rust standard library instead of lazy static crate
+const WIREGUARD_PATH: &str = "../wireguard";
+fn get_wireguard_path(file: &str) -> std::path::PathBuf {
+    std::path::PathBuf::from(
+        std::env::var("WIREGUARD_PATH").unwrap_or_else(|_| WIREGUARD_PATH.to_owned()),
+    )
+    .join(file)
+}
+
 pub static WIREGUARD_KEY: LazyLock<String> = LazyLock::new(|| {
-    std::fs::read_to_string(WIREGUARD_KEY_PATH)
+    std::fs::read_to_string(get_wireguard_path("wg0.pub"))
         .expect("Failed to read Wireguard public key")
         .trim()
         .to_string()
@@ -15,14 +21,14 @@ pub static WIREGUARD_KEY: LazyLock<String> = LazyLock::new(|| {
 
 impl WireguardConfig {
     pub fn load() -> std::io::Result<Self> {
-        let file = std::fs::read(WIREGUARD_DEVICES_PATH)?;
+        let file = std::fs::read(get_wireguard_path("config.json"))?;
         let config = serde_json::from_slice::<Self>(&file)?;
         Ok(config)
     }
 
     pub fn save(&self) -> std::io::Result<()> {
         let file = serde_json::to_string_pretty(self)?;
-        std::fs::write(WIREGUARD_DEVICES_PATH, file)?;
+        std::fs::write(get_wireguard_path("config.json"), file)?;
         Ok(())
     }
 
@@ -31,6 +37,7 @@ impl WireguardConfig {
         name: String,
         group: Option<String>,
     ) -> dioxus::Result<WireguardDeviceWithPrivateKey> {
+        tracing::info!("Adding Wireguard device: {}", name);
         let (private_key, public_key) = generate_wireguard_keys()?;
 
         let id = self.next_available_id()?;
