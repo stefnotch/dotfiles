@@ -6,7 +6,7 @@ use views::{Blog, Home, Navbar};
 
 /// Define a components module that contains all shared components for our app.
 mod components;
-mod server;
+mod doorbell;
 mod storage;
 mod timers;
 /// Define a views module that contains the UI for all Layouts and Routes for our app.
@@ -53,7 +53,7 @@ fn main() {
         Ok(
             dioxus::server::router(App).route(
                 "/api/doorbell/picture",
-                get(crate::server::doorbell::get_doorbell_picture),
+                get(crate::doorbell::server::get_doorbell_picture),
             ), // .layer(
                //     AuthLayer::new(Some(db.clone()))
                //         .with_config(AuthConfig::<i64>::default().with_anonymous_user_id(Some(1))),

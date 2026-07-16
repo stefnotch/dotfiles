@@ -1,4 +1,4 @@
-use crate::server::{DOORBELL_IP, DOORBELL_USERNAME};
+use crate::doorbell::{DOORBELL_IP, DOORBELL_USERNAME};
 use std::time::Duration;
 
 use dioxus::prelude::*;
