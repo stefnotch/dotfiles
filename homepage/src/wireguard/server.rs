@@ -62,7 +62,7 @@ impl WireguardConfig {
                 "peer",
                 &device.public_key,
                 "allowed-ips",
-                &format!("{}.{id}/32,{}:{id}/128", self.prefix.ipv4, self.prefix.ipv6),
+                &format!("{}.{id}/32,{}::{id}/128", self.prefix.ipv4, self.prefix.ipv6),
             ])
             .status()?;
 

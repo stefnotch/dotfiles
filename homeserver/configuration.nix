@@ -111,6 +111,11 @@
     ];
   };
 
+  users.users.homepage = {
+    isSystemUser = true;
+    group = "users";
+  };
+
   nix.settings.trusted-users = [ "@wheel" ];
 
   security.sudo.extraConfig = ''
@@ -165,6 +170,7 @@
     };
   };
 
+  # To inspect: systemctl status homepage
   systemd.services.homepage = {
     description = "Best Homepage";
     wantedBy = ["multi-user.target"];
@@ -172,14 +178,19 @@
     serviceConfig = {
       ProtectSystem = "strict";
       ExecStart = "${inputs.homepage.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/homepage";
+      Environment = "PATH=${pkgs.wireguard-tools}/bin";
       Restart = "always";
       Type = "simple";
-      DynamicUser = "yes";
+      User = "stefnotch";
+      Group = "users";
       # Grant network modification even for underprivileged users
       AmbientCapabilities = [
         "CAP_NET_ADMIN"
       ];
-      ReadWritePaths = [ "/home/stefnotch/dotfiles/wireguard/config.json" ];
+      ReadWritePaths = [
+        "/home/stefnotch/dotfiles/wireguard"
+        "/home/stefnotch/dotfiles/wireguard/config.json"
+      ];
     };
     environment = {
       IP = "::";
