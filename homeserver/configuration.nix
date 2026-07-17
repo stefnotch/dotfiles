@@ -185,6 +185,7 @@
       IP = "::";
       PORT = "8080";
       WIREGUARD_PATH = "/home/stefnotch/dotfiles/wireguard";
+      RUST_BACKTRACE = "1";
     };
   };
 
