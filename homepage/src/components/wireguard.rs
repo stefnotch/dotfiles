@@ -4,27 +4,7 @@ use crate::{components::QrCode, wireguard::WireguardDevice};
 
 #[component]
 pub fn Wireguard() -> Element {
-    // use_signal is a hook. Hooks in dioxus must be run in a consistent order every time the component is rendered.
-    // That means they can't be run inside othetr hooks, async blocks, if statements, or loops.
-    //
-    // use_signal is a hook that creates a state for the component. It takes a closure that returns the initial value of the state.
-    // The state is automatically tracked and will rerun any other hooks or components that read it whenever it changes.
-
-    let my_ip = use_resource(move || async move { get_my_ip().await });
-
     rsx! {
-        "You are"
-        if let Some(response) = &*my_ip.read() {
-            match response {
-                Ok(ip) => rsx! {
-                    p { "Your IP: {ip}" }
-                },
-                Err(err) => rsx! { "Failed to fetch IP: {err}" },
-            }
-        } else {
-            "Loading..."
-        }
-
         "Add a computer to Wireguard!"
         br {}
         AddDevice {}
