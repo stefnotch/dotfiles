@@ -47,7 +47,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-
 .animated-cat:focus {
     animation: cat-animation 2s infinite;
 }
@@ -71,5 +70,28 @@ button:disabled {
 
     100% {
         transform: translateX(0) rotateY(0deg);
+    }
+}
+
+.title {
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    align-items: end;
+    padding-bottom: 8px;
+}
+
+.title span {
+    padding-bottom: 8px;
+}
+
+/* Add a media query for smaller screens */
+@media (max-width: 450px) {
+    .title {
+        font-size: 2.5rem;
+    }
+
+    .title span {
+        padding-bottom: 0;
     }
 }

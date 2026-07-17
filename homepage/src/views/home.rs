@@ -8,14 +8,15 @@ const HOME_ICON: Asset = asset!("/assets/house.svg");
 #[component]
 pub fn Home() -> Element {
     rsx! {
-        h1 { display: "flex",
+        h1 {
+            class: "title",
             img {
                 src: HOME_ICON,
                 alt: "Home Icon",
                 style: "border: 0",
                 width: 128,
             }
-            span { style: "margin-left: 2rem; padding-top: 92px;", "Best Homepage!" }
+            span { "Best Homepage!" }
         }
         div {
             ExpandBox { title: "Doorbell 📸", persistence_key: "doorbell", Doorbell {} }
@@ -23,8 +24,6 @@ pub fn Home() -> Element {
             ExpandBox { title: "Home Network 🔗", persistence_key: "home_network", HomeNetwork {} }
 
             ExpandBox { title: "VPN 🔒", persistence_key: "vpn", Vpn {} }
-
-            Echo {}
 
             Cat {}
         }
