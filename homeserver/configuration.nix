@@ -11,7 +11,7 @@
     ./hardware-configuration.nix
     ../wireguard/wireguard.nix
     ../dns/duckdns.nix
-    ../smb/smb.nix
+    ../fileserver/fileserver.nix
   ];
 
   boot = {
@@ -64,6 +64,8 @@
     80 443
     # For when I directly access the homepage by IP
     8080
+    # For NFS
+    2049
   ];
   services.caddy = {
     enable = true;
@@ -115,9 +117,12 @@
 
   users.users.homeserver = {
       description = "User for accessing the homeserver (e.g. Samba)";
+      uid = 1001;
       extraGroups = [ "users" ];
       isNormalUser = true;
   };
+
+  users.groups.users.gid = 100;
 
   nix.settings.trusted-users = [ "@wheel" ];
 

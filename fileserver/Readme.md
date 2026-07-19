@@ -1,4 +1,4 @@
-# SMB
+# Fileserver
 
 Files for everyone! They're free, get yours today!
 Access it via stefnotch-home.duckdns.org.
@@ -11,6 +11,7 @@ And set a Samba password via `sudo smbpasswd -a homeserver`
 
 ## Stored files
 - Doorbell photos
-- 
 
-Uses Samba, because NFSv4 isn't supported on Windows.
+## Protocols
+- Samba/SMB
+- NFSv4

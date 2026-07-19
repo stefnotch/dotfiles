@@ -25,6 +25,14 @@
     };
   };
 
+  services.nfs.server = {
+    enable = true;
+    # Insecure just means that all ports can be used.
+    exports = ''
+    /srv/shared    *(insecure,rw,sync,no_subtree_check,all_squash,anonuid=1001,anongid=100)
+    '';
+  };
+
   # Ensure the shared folder exists
   systemd.tmpfiles.rules = [
     "d /srv/shared 0775 homeserver users - -"
