@@ -31,6 +31,18 @@
     exports = ''
     /srv/shared    *(insecure,rw,sync,no_subtree_check,all_squash,anonuid=1001,anongid=100)
     '';
+    # The doorbell relies on NFS version 3
+    lockdPort = 4001;
+    mountdPort = 4002;
+    statdPort = 4000;
+  };
+  services.nfs.settings = {
+      nfsd = {
+        udp = "y";
+        # vers2 = false;
+        # vers3 = false;
+        # vers4 = true;
+      };
   };
 
   # Ensure the shared folder exists

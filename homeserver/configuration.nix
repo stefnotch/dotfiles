@@ -66,6 +66,12 @@
     8080
     # For NFS
     2049
+    # For NFS version 3
+    111 4000 4001 4002 20048
+  ];
+  networking.firewall.allowedUDPPorts = [
+    # For NFS version 3
+    111 2049 4000 4001 4002 20048
   ];
   services.caddy = {
     enable = true;
