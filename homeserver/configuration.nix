@@ -11,6 +11,7 @@
     ./hardware-configuration.nix
     ../wireguard/wireguard.nix
     ../dns/duckdns.nix
+    ../smb/smb.nix
   ];
 
   boot = {
@@ -58,7 +59,12 @@
   };
 
   # Ports for Caddy reverse proxy
-  networking.firewall.allowedTCPPorts = [ 80 443 8080 ];
+  networking.firewall.allowedTCPPorts = [
+    # Normal HTTP and HTTPS ports for caddy
+    80 443
+    # For when I directly access the homepage by IP
+    8080
+  ];
   services.caddy = {
     enable = true;
     # Will be upgraded to a reverse proxy once it is working
@@ -77,12 +83,8 @@
     };
   };
 
-  # Set your time zone.
   time.timeZone = "Europe/Vienna";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_AU.UTF-8";
     LC_IDENTIFICATION = "en_AU.UTF-8";
@@ -111,9 +113,10 @@
     ];
   };
 
-  users.users.homepage = {
-    isSystemUser = true;
-    group = "users";
+  users.users.homeserver = {
+      description = "User for accessing the homeserver (e.g. Samba)";
+      extraGroups = [ "users" ];
+      isNormalUser = true;
   };
 
   nix.settings.trusted-users = [ "@wheel" ];
@@ -121,7 +124,7 @@
   security.sudo.extraConfig = ''
     Defaults lecture = never # less noisy sudo
     Defaults pwfeedback # show dots when typing password
-    Defaults timestamp_timeout=30 # only ask for password every 30 minutes
+    Defaults timestamp_timeout=60 # only ask for password every hour
     '';
 
   # Allow unfree packages

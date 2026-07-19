@@ -9,6 +9,18 @@
       "group": "admin",
       "publicKey": "ZD52qjNPWLKeery33vp3LcWHfZEN+9PSYb3T9gtZ1Qw=",
       "id": 10
+    },
+    {
+      "name": "Richimobile",
+      "group": "richi",
+      "publicKey": "DPjaOXrTu1IBarZiCNggED8lQypXHbxCkLhIIfl99BA=",
+      "id": 3
+    },
+    {
+      "name": "Ediphone",
+      "group": "edi",
+      "publicKey": "ysL8WmPBob97vdlj4yx8vtrp7UQ3kouHjkrNOrjaHjo=",
+      "id": 2
     }
   ]
 }
