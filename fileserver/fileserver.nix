@@ -13,6 +13,11 @@
         "security" = "user";
         "use sendfile" = "yes";
         "deadtime" = "120"; # timeout after 2 hours
+
+        # For the Apple devices at home ;w;
+        "vfs objects" = "catia fruit streams_xattr";
+        "fruit:metadata" = "stream";
+        "fruit:resource" = "stream";
       };
       "shared" = {
         "valid users" = "homeserver";
